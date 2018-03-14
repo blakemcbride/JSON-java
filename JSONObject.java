@@ -1605,15 +1605,14 @@ public class JSONObject {
     }
 
     /**
-     * Put a key/value pair in the JSONObject. If the value is null, then the
-     * key will be removed from the JSONObject if it is present.
+     * Put a key/value pair in the JSONObject.
      *
      * @param key
      *            A key string.
      * @param value
      *            An object which is the value. It should be of one of these
      *            types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
-     *            String, or the JSONObject.NULL object.
+     *            String, null, or the JSONObject.NULL object.
      * @return this.
      * @throws JSONException
      *             If the value is non-finite number or if the key is null.
@@ -1622,12 +1621,11 @@ public class JSONObject {
         if (key == null) {
             throw new NullPointerException("Null key.");
         }
-        if (value != null) {
+        if (value == null)
+            value = JSONObject.NULL;
+        else
             testValidity(value);
-            this.map.put(key, value);
-        } else {
-            this.remove(key);
-        }
+        this.map.put(key, value);
         return this;
     }
 
