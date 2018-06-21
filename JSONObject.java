@@ -804,6 +804,8 @@ public class JSONObject {
      */
     public String getString(String key) throws JSONException {
         Object object = this.get(key);
+	if (NULL.equals(object))
+		return null;
         if (object instanceof String) {
             return (String) object;
         }
