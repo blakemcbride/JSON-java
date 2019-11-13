@@ -38,3 +38,7 @@ Enhanced .gitignore
 5.
 
 Changed getString to return null when the JSON has a null.
+
+6.
+
+toString used to convert "</" into "<\/".  Corrected.
