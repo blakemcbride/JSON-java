@@ -42,3 +42,7 @@ Changed getString to return null when the JSON has a null.
 6.
 
 toString used to convert "</" into "<\/".  Corrected.
+
+7.
+
+Add ability for strings to have embedded \n and \r
