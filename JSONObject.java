@@ -1714,7 +1714,7 @@ public class JSONObject {
      * @param jsonPointer string that can be used to create a JSONPointer
      * @return the item matched by the JSONPointer, otherwise null
      */
-    public Object query(JSONPointer jsonPointer) {
+    private Object query(JSONPointer jsonPointer) {
         return jsonPointer.queryFrom(this);
     }
     
@@ -1738,7 +1738,7 @@ public class JSONObject {
      * @return the queried value or {@code null}
      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
      */
-    public Object optQuery(JSONPointer jsonPointer) {
+    private Object optQuery(JSONPointer jsonPointer) {
         try {
             return jsonPointer.queryFrom(this);
         } catch (JSONPointerException e) {
@@ -1756,7 +1756,7 @@ public class JSONObject {
      *            A String
      * @return A String correctly formatted for insertion in a JSON text.
      */
-    public static String quote(String string) {
+    static String quote(String string) {
         StringWriter sw = new StringWriter();
         synchronized (sw.getBuffer()) {
             try {
@@ -1768,7 +1768,7 @@ public class JSONObject {
         }
     }
 
-    public static Writer quote(String string, Writer w) throws IOException {
+    private static Writer quote(String string, Writer w) throws IOException {
         if (string == null || string.length() == 0) {
             w.write("\"\"");
             return w;
@@ -1790,14 +1790,14 @@ public class JSONObject {
                 w.write('\\');
                 w.write(c);
                 break;
-/*
+                /*
             case '/':
                 if (b == '<') {
                     w.write('\\');
                 }
                 w.write(c);
                 break;
-*/
+                 */
             case '\b':
                 w.write("\\b");
                 break;
@@ -1849,7 +1849,7 @@ public class JSONObject {
      * @param other The other JSONObject
      * @return true if they are equal
      */
-    public boolean similar(Object other) {
+    boolean similar(Object other) {
         try {
             if (!(other instanceof JSONObject)) {
                 return false;
@@ -1891,7 +1891,7 @@ public class JSONObject {
      * @param val value to test
      * @return true if the string is "-0" or if it contains '.', 'e', or 'E', false otherwise.
      */
-    protected static boolean isDecimalNotation(final String val) {
+    static boolean isDecimalNotation(final String val) {
         return val.indexOf('.') > -1 || val.indexOf('e') > -1
                 || val.indexOf('E') > -1 || "-0".equals(val);
     }
@@ -1906,7 +1906,7 @@ public class JSONObject {
      * @throws NumberFormatException thrown if the value is not a valid number. A public
      *      caller should catch this and wrap it in a {@link JSONException} if applicable.
      */
-    protected static Number stringToNumber(final String val) throws NumberFormatException {
+    static Number stringToNumber(final String val) throws NumberFormatException {
         char initial = val.charAt(0);
         if ((initial >= '0' && initial <= '9') || initial == '-') {
             // decimal representation
@@ -1970,7 +1970,7 @@ public class JSONObject {
      */
     // Changes to this method must be copied to the corresponding method in
     // the XML class to keep full support for Android
-    public static Object stringToValue(String string) {
+    static Object stringToValue(String string) {
         if (string.equals("")) {
             return string;
         }
@@ -2022,7 +2022,7 @@ public class JSONObject {
      * @throws JSONException
      *             If o is a non-finite number.
      */
-    public static void testValidity(Object o) throws JSONException {
+    static void testValidity(Object o) throws JSONException {
         if (o != null) {
             if (o instanceof Double) {
                 if (((Double) o).isInfinite() || ((Double) o).isNaN()) {
@@ -2049,7 +2049,7 @@ public class JSONObject {
      * @throws JSONException
      *             If any of the values are non-finite numbers.
      */
-    public JSONArray toJSONArray(JSONArray names) throws JSONException {
+    JSONArray toJSONArray(JSONArray names) throws JSONException {
         if (names == null || names.length() == 0) {
             return null;
         }
@@ -2085,16 +2085,16 @@ public class JSONObject {
     /**
      * Make a pretty-printed JSON text of this JSONObject.
      * 
-     * <p>If <code>indentFactor > 0</code> and the {@link JSONObject}
+     * <p>If <code>indentFactor &gt; 0</code> and the {@link JSONObject}
      * has only one key, then the object will be output on a single line:
      * <pre>{@code {"key": 1}}</pre>
      * 
      * <p>If an object has 2 or more keys, then it will be output across
-     * multiple lines: <code><pre>{
+     * multiple lines: <code>{
      *  "key1": 1,
      *  "key2": "value 2",
      *  "key3": 3
-     * }</pre></code>
+     * }</code>
      * <p><b>
      * Warning: This method assumes that the data structure is acyclical.
      * </b>
@@ -2139,7 +2139,7 @@ public class JSONObject {
      * @throws JSONException
      *             If the value is or contains an invalid number.
      */
-    public static String valueToString(Object value) throws JSONException {
+    static String valueToString(Object value) throws JSONException {
     	// moves the implementation to JSONWriter as:
     	// 1. It makes more sense to be part of the writer class
     	// 2. For Android support this method is not available. By implementing it in the Writer
@@ -2159,7 +2159,7 @@ public class JSONObject {
      *            The object to wrap
      * @return The wrapped value
      */
-    public static Object wrap(Object object) {
+    static Object wrap(Object object) {
         try {
             if (object == null) {
                 return NULL;
@@ -2214,8 +2214,8 @@ public class JSONObject {
         return this.write(writer, 0, 0);
     }
 
-    static final Writer writeValue(Writer writer, Object value,
-            int indentFactor, int indent) throws JSONException, IOException {
+    static Writer writeValue(Writer writer, Object value,
+                             int indentFactor, int indent) throws JSONException, IOException {
         if (value == null || value.equals(null)) {
             writer.write("null");
         } else if (value instanceof JSONString) {
@@ -2271,7 +2271,7 @@ public class JSONObject {
     /**
      * Write the contents of the JSONObject as JSON text to a writer.
      * 
-     * <p>If <code>indentFactor > 0</code> and the {@link JSONObject}
+     * <p>If <code>indentFactor &gt; 0</code> and the {@link JSONObject}
      * has only one key, then the object will be output on a single line:
      * <pre>{@code {"key": 1}}</pre>
      * 
@@ -2294,7 +2294,7 @@ public class JSONObject {
      * @return The writer.
      * @throws JSONException
      */
-    public Writer write(Writer writer, int indentFactor, int indent)
+    private Writer write(Writer writer, int indentFactor, int indent)
             throws JSONException {
         try {
             boolean commanate = false;
@@ -2358,7 +2358,7 @@ public class JSONObject {
      *
      * @return a java.util.Map containing the entries of this object
      */
-    public Map<String, Object> toMap() {
+    Map<String, Object> toMap() {
         Map<String, Object> results = new HashMap<String, Object>();
         for (Entry<String, Object> entry : this.entrySet()) {
             Object value;
