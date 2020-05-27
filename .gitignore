@@ -4,3 +4,7 @@
 json.jar
 *~
 
+# ignore intellij files
+.idea/
+*.iml
+

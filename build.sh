@@ -1,6 +1,8 @@
 #
 
 rm -f json.jar
-javac -d .  *.java
-jar cf json.jar org
-rm -rf org
+mkdir build
+javac -d build  org/json/*.java
+jar cf json.jar -C build org
+rm -rf build
+
