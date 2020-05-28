@@ -388,7 +388,7 @@ public class JSONObject {
                 JSONObject target = this;
                 for (int i = 0; i < last; i += 1) {
                     String segment = path[i];
-                    JSONObject nextTarget = target.optJSONObject(segment);
+                    JSONObject nextTarget = target.getJSONObject(segment);
                     if (nextTarget == null) {
                         nextTarget = new JSONObject();
                         target.put(segment, nextTarget);
@@ -505,21 +505,16 @@ public class JSONObject {
     /**
      * Get the value object associated with a key.
      *
-     * @param key
-     *            A key string.
-     * @return The object associated with the key.
+     * @param key A key string.
+     * @return The object associated with the key or null if not found.
      * @throws JSONException
-     *             if the key is not found.
+     *             if the key is null.
      */
     public Object get(String key) throws JSONException {
         if (key == null) {
             throw new JSONException("Null key.");
         }
-        Object object = this.opt(key);
-        if (object == null) {
-            throw new JSONException("JSONObject[" + quote(key) + "] not found.");
-        }
-        return object;
+        return this.opt(key);
     }
 
     /**
@@ -529,36 +524,29 @@ public class JSONObject {
     *           The type of enum to retrieve.
     * @param key
     *           A key string.
-    * @return The enum value associated with the key
+    * @return The enum value associated with the key or null if not found
     * @throws JSONException
-    *             if the key is not found or if the value cannot be converted
+    *             if the value cannot be converted
     *             to an enum.
     */
     public <E extends Enum<E>> E getEnum(Class<E> clazz, String key) throws JSONException {
         E val = optEnum(clazz, key);
-        if(val==null) {
-            // JSONException should really take a throwable argument.
-            // If it did, I would re-implement this with the Enum.valueOf
-            // method and place any thrown exception in the JSONException
-            throw new JSONException("JSONObject[" + quote(key)
-                    + "] is not an enum of type " + quote(clazz.getSimpleName())
-                    + ".");
-        }
         return val;
     }
 
     /**
-     * Get the boolean value associated with a key.
+     * Get the Boolean value associated with a key, or return dflt
+     * of key isn't present.
      *
      * @param key
-     *            A key string.
-     * @return The truth.
-     * @throws JSONException
-     *             if the value is not a Boolean or the String "true" or
-     *             "false".
+     * @param dflt
+     * @return The truth value or null if not found
+     * @throws JSONException if the value is not a Boolean or the String "true" or "false"
      */
-    public boolean getBoolean(String key) throws JSONException {
+    public Boolean getBoolean(String key, Boolean dflt) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return dflt;
         if (object.equals(Boolean.FALSE)
                 || (object instanceof String && ((String) object)
                         .equalsIgnoreCase("false"))) {
@@ -573,17 +561,31 @@ public class JSONObject {
     }
 
     /**
-     * Get the BigInteger value associated with a key.
+     * Get the Boolean value associated with a key, or return null
+     * of key isn't present.
      *
      * @param key
-     *            A key string.
-     * @return The numeric value.
-     * @throws JSONException
-     *             if the key is not found or if the value cannot 
-     *             be converted to BigInteger.
+     * @return The truth value or null if not found
+     * @throws JSONException if the value is not a Boolean or the String "true" or "false"
      */
+    public Boolean getBoolean(String key) throws JSONException {
+        return getBoolean(key, null);
+    }
+
+        /**
+         * Get the BigInteger value associated with a key.
+         *
+         * @param key
+         *            A key string.
+         * @return The numeric value or null if not found
+         * @throws JSONException
+         *             if the value cannot
+         *             be converted to BigInteger.
+         */
     public BigInteger getBigInteger(String key) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return null;
         try {
             return new BigInteger(object.toString());
         } catch (Exception e) {
@@ -597,13 +599,15 @@ public class JSONObject {
      *
      * @param key
      *            A key string.
-     * @return The numeric value.
+     * @return The numeric value or null if not found
      * @throws JSONException
-     *             if the key is not found or if the value
+     *             if the value
      *             cannot be converted to BigDecimal.
      */
     public BigDecimal getBigDecimal(String key) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return null;
         if (object instanceof BigDecimal) {
             return (BigDecimal)object;
         }
@@ -620,13 +624,15 @@ public class JSONObject {
      *
      * @param key
      *            A key string.
-     * @return The numeric value.
+     * @return The numeric value or null if not found
      * @throws JSONException
-     *             if the key is not found or if the value is not a Number
+     *             if the value is not a Number
      *             object and cannot be converted to a number.
      */
-    public double getDouble(String key) throws JSONException {
+    public Double getDouble(String key, Double dflt) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return dflt;
         try {
             return object instanceof Number ? ((Number) object).doubleValue()
                     : Double.parseDouble(object.toString());
@@ -636,18 +642,25 @@ public class JSONObject {
         }
     }
 
+    public Double getDouble(String key) throws JSONException {
+        return getDouble(key, null);
+    }
+
     /**
-     * Get the float value associated with a key.
+     * Get the Float value associated with a key.
      *
      * @param key
      *            A key string.
-     * @return The numeric value.
+     * @param dflt the default value
+     * @return The numeric value or dflt if not found
      * @throws JSONException
-     *             if the key is not found or if the value is not a Number
+     *             if the value is not a Number
      *             object and cannot be converted to a number.
      */
-    public float getFloat(String key) throws JSONException {
+    public Float getFloat(String key, Float dflt) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return dflt;
         try {
             return object instanceof Number ? ((Number) object).floatValue()
                     : Float.parseFloat(object.toString());
@@ -658,17 +671,30 @@ public class JSONObject {
     }
 
     /**
-     * Get the Number value associated with a key.
+     * Get the Float value associated with a key or return null if not found
      *
      * @param key
-     *            A key string.
-     * @return The numeric value.
+     * @return the Float value or null if not found
      * @throws JSONException
-     *             if the key is not found or if the value is not a Number
-     *             object and cannot be converted to a number.
      */
+    public Float getFloat(String key) throws JSONException {
+        return getFloat(key, null);
+    }
+
+        /**
+         * Get the Number value associated with a key.
+         *
+         * @param key
+         *            A key string.
+         * @return The numeric value or null if not found
+         * @throws JSONException
+         *             if the value is not a Number
+         *             object and cannot be converted to a number.
+         */
     public Number getNumber(String key) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return null;
         try {
             if (object instanceof Number) {
                 return (Number)object;
@@ -685,13 +711,16 @@ public class JSONObject {
      *
      * @param key
      *            A key string.
-     * @return The integer value.
+     * @param dflt the default value
+     * @return The integer value or dflt if not found
      * @throws JSONException
-     *             if the key is not found or if the value cannot be converted
+     *             if the value cannot be converted
      *             to an integer.
      */
-    public int getInt(String key) throws JSONException {
+    public Integer getInt(String key, Integer dflt) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return dflt;
         try {
             return object instanceof Number ? ((Number) object).intValue()
                     : Integer.parseInt((String) object);
@@ -702,16 +731,33 @@ public class JSONObject {
     }
 
     /**
-     * Get the JSONArray value associated with a key.
+     * Get the Integer value associated with a key.  If the key
+     * isn't present, return null.
      *
      * @param key
-     *            A key string.
-     * @return A JSONArray which is the value.
+     * @return the Integer or null if not found
      * @throws JSONException
-     *             if the key is not found or if the value is not a JSONArray.
      */
-    public JSONArray getJSONArray(String key) throws JSONException {
+    public Integer getInt(String key) throws JSONException {
+        return getInt(key, null);
+    }
+
+        /**
+         * Get the JSONArray value associated with a key.
+         * If rtnArray is true and the key is not found, an empty JSONArray is returned.
+         * If rtnArray is false and the key is not found, null is returned.
+         *
+         * @param key
+         *            A key string.
+         * @param rtnArray
+         * @return A JSONArray which is the value or null if not found
+         * @throws JSONException
+         *             if the key is not a JSONArray.
+         */
+    public JSONArray getJSONArray(String key, boolean rtnArray) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return rtnArray ? new JSONArray() : null;
         if (object instanceof JSONArray) {
             return (JSONArray) object;
         }
@@ -720,16 +766,31 @@ public class JSONObject {
     }
 
     /**
-     * Get the JSONObject value associated with a key.
+     *  Get the JSONArray value associated with a key.  If key not found, return null.
      *
      * @param key
-     *            A key string.
-     * @return A JSONObject which is the value.
-     * @throws JSONException
-     *             if the key is not found or if the value is not a JSONObject.
+     * @return
+     * @throws JSONException if the key is not a JSONArray.
      */
-    public JSONObject getJSONObject(String key) throws JSONException {
+    public JSONArray getJSONArray(String key) throws JSONException {
+        return getJSONArray(key, false);
+    }
+
+        /**
+         * Get the JSONObject value associated with a key.
+         * If rtnObj is try and the key is not found, an empty JSONObject is returned.
+         *
+         *
+         * @param key A key string.
+         * @param rtnObj
+         * @return A JSONObject which is the value or null if not found
+         * @throws JSONException
+         *             if the value is not a JSONObject.
+         */
+    public JSONObject getJSONObject(String key, boolean rtnObj) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return rtnObj ? new JSONObject() : null;
         if (object instanceof JSONObject) {
             return (JSONObject) object;
         }
@@ -737,18 +798,26 @@ public class JSONObject {
                 + "] is not a JSONObject.");
     }
 
-    /**
-     * Get the long value associated with a key.
-     *
-     * @param key
-     *            A key string.
-     * @return The long value.
-     * @throws JSONException
-     *             if the key is not found or if the value cannot be converted
-     *             to a long.
-     */
-    public long getLong(String key) throws JSONException {
+    public JSONObject getJSONObject(String key) throws JSONException {
+        return getJSONObject(key, false);
+    }
+
+        /**
+         * Get the Long value associated with a key.
+         * If key not present, return dflt.
+         *
+         * @param key
+         *            A key string.
+         * @param dflt
+         * @return The long value or null if not found
+         * @throws JSONException
+         *             if the value cannot be converted
+         *             to a long.
+         */
+    public Long getLong(String key, Long dflt) throws JSONException {
         Object object = this.get(key);
+        if (object == null)
+            return dflt;
         try {
             return object instanceof Number ? ((Number) object).longValue()
                     : Long.parseLong((String) object);
@@ -759,10 +828,25 @@ public class JSONObject {
     }
 
     /**
-     * Get an array of field names from a JSONObject.
+     * Get the Long value associated with a key.
+     * If key not present, return null.
      *
-     * @return An array of field names, or null if there are no names.
+     * @param key
+     *            A key string.
+     * @return The long value or null if not found
+     * @throws JSONException
+     *             if the value cannot be converted
+     *             to a long.
      */
+    public Long getLong(String key) throws JSONException {
+        return getLong(key, null);
+    }
+
+        /**
+         * Get an array of field names from a JSONObject.
+         *
+         * @return An array of field names, or null if there are no names.
+         */
     public static String[] getNames(JSONObject jo) {
         int length = jo.length();
         if (length == 0) {
@@ -795,17 +879,19 @@ public class JSONObject {
 
     /**
      * Get the string associated with a key.
+     * If key not present, return dflt.
      *
      * @param key
      *            A key string.
-     * @return A string which is the value.
+     * @param dflt the default return value if key not present
+     * @return A string which is the value or dflt if not found
      * @throws JSONException
      *             if there is no string value for the key.
      */
-    public String getString(String key) throws JSONException {
+    public String getString(String key, String dflt) throws JSONException {
         Object object = this.get(key);
-	if (NULL.equals(object))
-		return null;
+        if (object == null  ||  NULL.equals(object))
+            return dflt;
         if (object instanceof String) {
             return (String) object;
         }
@@ -813,12 +899,26 @@ public class JSONObject {
     }
 
     /**
-     * Determine if the JSONObject contains a specific key.
+     * Get the string associated with a key.
+     * If key not present, return null.
      *
      * @param key
      *            A key string.
-     * @return true if the key exists in the JSONObject.
+     * @return A string which is the value or null if not found
+     * @throws JSONException
+     *             if there is no string value for the key.
      */
+    public String getString(String key) throws JSONException {
+        return getString(key, null);
+    }
+
+        /**
+         * Determine if the JSONObject contains a specific key.
+         *
+         * @param key
+         *            A key string.
+         * @return true if the key exists in the JSONObject.
+         */
     public boolean has(String key) {
         return this.map.containsKey(key);
     }
@@ -997,12 +1097,12 @@ public class JSONObject {
      * @param defaultValue
      *            The default in case the value is not found
      * @return The enum value associated with the key or defaultValue
-     *            if the value is not found or cannot be assigned to <code>clazz</code>
+     *            if the value cannot be assigned to <code>clazz</code>
      */
     public <E extends Enum<E>> E optEnum(Class<E> clazz, String key, E defaultValue) {
         try {
             Object val = this.opt(key);
-            if (NULL.equals(val)) {
+            if (val == null  ||  NULL.equals(val)) {
                 return defaultValue;
             }
             if (clazz.isAssignableFrom(val.getClass())) {
@@ -1017,397 +1117,6 @@ public class JSONObject {
         } catch (NullPointerException e) {
             return defaultValue;
         }
-    }
-
-    /**
-     * Get an optional boolean associated with a key. It returns false if there
-     * is no such key, or if the value is not Boolean.TRUE or the String "true".
-     *
-     * @param key
-     *            A key string.
-     * @return The truth.
-     */
-    public boolean optBoolean(String key) {
-        return this.optBoolean(key, false);
-    }
-
-    /**
-     * Get an optional boolean associated with a key. It returns the
-     * defaultValue if there is no such key, or if it is not a Boolean or the
-     * String "true" or "false" (case insensitive).
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return The truth.
-     */
-    public boolean optBoolean(String key, boolean defaultValue) {
-        Object val = this.opt(key);
-        if (NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof Boolean){
-            return ((Boolean) val).booleanValue();
-        }
-        try {
-            // we'll use the get anyway because it does string conversion.
-            return this.getBoolean(key);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get an optional BigDecimal associated with a key, or the defaultValue if
-     * there is no such key or if its value is not a number. If the value is a
-     * string, an attempt will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return An object which is the value.
-     */
-    public BigDecimal optBigDecimal(String key, BigDecimal defaultValue) {
-        Object val = this.opt(key);
-        if (NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof BigDecimal){
-            return (BigDecimal) val;
-        }
-        if (val instanceof BigInteger){
-            return new BigDecimal((BigInteger) val);
-        }
-        if (val instanceof Double || val instanceof Float){
-            return new BigDecimal(((Number) val).doubleValue());
-        }
-        if (val instanceof Long || val instanceof Integer
-                || val instanceof Short || val instanceof Byte){
-            return new BigDecimal(((Number) val).longValue());
-        }
-        // don't check if it's a string in case of unchecked Number subclasses
-        try {
-            return new BigDecimal(val.toString());
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get an optional BigInteger associated with a key, or the defaultValue if
-     * there is no such key or if its value is not a number. If the value is a
-     * string, an attempt will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return An object which is the value.
-     */
-    public BigInteger optBigInteger(String key, BigInteger defaultValue) {
-        Object val = this.opt(key);
-        if (NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof BigInteger){
-            return (BigInteger) val;
-        }
-        if (val instanceof BigDecimal){
-            return ((BigDecimal) val).toBigInteger();
-        }
-        if (val instanceof Double || val instanceof Float){
-            return new BigDecimal(((Number) val).doubleValue()).toBigInteger();
-        }
-        if (val instanceof Long || val instanceof Integer
-                || val instanceof Short || val instanceof Byte){
-            return BigInteger.valueOf(((Number) val).longValue());
-        }
-        // don't check if it's a string in case of unchecked Number subclasses
-        try {
-            // the other opt functions handle implicit conversions, i.e. 
-            // jo.put("double",1.1d);
-            // jo.optInt("double"); -- will return 1, not an error
-            // this conversion to BigDecimal then to BigInteger is to maintain
-            // that type cast support that may truncate the decimal.
-            final String valStr = val.toString();
-            if(isDecimalNotation(valStr)) {
-                return new BigDecimal(valStr).toBigInteger();
-            }
-            return new BigInteger(valStr);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get an optional double associated with a key, or NaN if there is no such
-     * key or if its value is not a number. If the value is a string, an attempt
-     * will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A string which is the key.
-     * @return An object which is the value.
-     */
-    public double optDouble(String key) {
-        return this.optDouble(key, Double.NaN);
-    }
-
-    /**
-     * Get an optional double associated with a key, or the defaultValue if
-     * there is no such key or if its value is not a number. If the value is a
-     * string, an attempt will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return An object which is the value.
-     */
-    public double optDouble(String key, double defaultValue) {
-        Object val = this.opt(key);
-        if (NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof Number){
-            return ((Number) val).doubleValue();
-        }
-        if (val instanceof String) {
-            try {
-                return Double.parseDouble((String) val);
-            } catch (Exception e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-
-    /**
-     * Get the optional double value associated with an index. NaN is returned
-     * if there is no value for the index, or if the value is not a number and
-     * cannot be converted to a number.
-     *
-     * @param key
-     *            A key string.
-     * @return The value.
-     */
-    public float optFloat(String key) {
-        return this.optFloat(key, Float.NaN);
-    }
-
-    /**
-     * Get the optional double value associated with an index. The defaultValue
-     * is returned if there is no value for the index, or if the value is not a
-     * number and cannot be converted to a number.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default value.
-     * @return The value.
-     */
-    public float optFloat(String key, float defaultValue) {
-        Object val = this.opt(key);
-        if (JSONObject.NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof Number){
-            return ((Number) val).floatValue();
-        }
-        if (val instanceof String) {
-            try {
-                return Float.parseFloat((String) val);
-            } catch (Exception e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-
-    /**
-     * Get an optional int value associated with a key, or zero if there is no
-     * such key or if the value is not a number. If the value is a string, an
-     * attempt will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A key string.
-     * @return An object which is the value.
-     */
-    public int optInt(String key) {
-        return this.optInt(key, 0);
-    }
-
-    /**
-     * Get an optional int value associated with a key, or the default if there
-     * is no such key or if the value is not a number. If the value is a string,
-     * an attempt will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return An object which is the value.
-     */
-    public int optInt(String key, int defaultValue) {
-        Object val = this.opt(key);
-        if (NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof Number){
-            return ((Number) val).intValue();
-        }
-        
-        if (val instanceof String) {
-            try {
-                return new BigDecimal((String) val).intValue();
-            } catch (Exception e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-
-    /**
-     * Get an optional JSONArray associated with a key. It returns null if there
-     * is no such key, or if its value is not a JSONArray.
-     *
-     * @param key
-     *            A key string.
-     * @return A JSONArray which is the value.
-     */
-    public JSONArray optJSONArray(String key) {
-        Object o = this.opt(key);
-        return o instanceof JSONArray ? (JSONArray) o : null;
-    }
-
-    /**
-     * Get an optional JSONObject associated with a key. It returns null if
-     * there is no such key, or if its value is not a JSONObject.
-     *
-     * @param key
-     *            A key string.
-     * @return A JSONObject which is the value.
-     */
-    public JSONObject optJSONObject(String key) {
-        Object object = this.opt(key);
-        return object instanceof JSONObject ? (JSONObject) object : null;
-    }
-
-    /**
-     * Get an optional long value associated with a key, or zero if there is no
-     * such key or if the value is not a number. If the value is a string, an
-     * attempt will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A key string.
-     * @return An object which is the value.
-     */
-    public long optLong(String key) {
-        return this.optLong(key, 0);
-    }
-
-    /**
-     * Get an optional long value associated with a key, or the default if there
-     * is no such key or if the value is not a number. If the value is a string,
-     * an attempt will be made to evaluate it as a number.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return An object which is the value.
-     */
-    public long optLong(String key, long defaultValue) {
-        Object val = this.opt(key);
-        if (NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof Number){
-            return ((Number) val).longValue();
-        }
-        
-        if (val instanceof String) {
-            try {
-                return new BigDecimal((String) val).longValue();
-            } catch (Exception e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-    
-    /**
-     * Get an optional {@link Number} value associated with a key, or <code>null</code>
-     * if there is no such key or if the value is not a number. If the value is a string,
-     * an attempt will be made to evaluate it as a number ({@link BigDecimal}). This method
-     * would be used in cases where type coercion of the number value is unwanted.
-     *
-     * @param key
-     *            A key string.
-     * @return An object which is the value.
-     */
-    public Number optNumber(String key) {
-        return this.optNumber(key, null);
-    }
-
-    /**
-     * Get an optional {@link Number} value associated with a key, or the default if there
-     * is no such key or if the value is not a number. If the value is a string,
-     * an attempt will be made to evaluate it as a number. This method
-     * would be used in cases where type coercion of the number value is unwanted.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return An object which is the value.
-     */
-    public Number optNumber(String key, Number defaultValue) {
-        Object val = this.opt(key);
-        if (NULL.equals(val)) {
-            return defaultValue;
-        }
-        if (val instanceof Number){
-            return (Number) val;
-        }
-        
-        if (val instanceof String) {
-            try {
-                return stringToNumber((String) val);
-            } catch (Exception e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-    
-    /**
-     * Get an optional string associated with a key. It returns an empty string
-     * if there is no such key. If the value is not a string and is not null,
-     * then it is converted to a string.
-     *
-     * @param key
-     *            A key string.
-     * @return A string which is the value.
-     */
-    public String optString(String key) {
-        return this.optString(key, "");
-    }
-
-    /**
-     * Get an optional string associated with a key. It returns the defaultValue
-     * if there is no such key.
-     *
-     * @param key
-     *            A key string.
-     * @param defaultValue
-     *            The default.
-     * @return A string which is the value.
-     */
-    public String optString(String key, String defaultValue) {
-        Object object = this.opt(key);
-        return NULL.equals(object) ? defaultValue : object.toString();
     }
 
     /**

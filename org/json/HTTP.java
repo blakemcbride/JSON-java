@@ -146,13 +146,13 @@ public class HTTP {
         sb.append(CRLF);
         // Don't use the new entrySet API to maintain Android support
         for (final String key : jo.keySet()) {
-            String value = jo.optString(key);
+            String value = jo.getString(key);
             if (!"HTTP-Version".equals(key)      && !"Status-Code".equals(key) &&
                     !"Reason-Phrase".equals(key) && !"Method".equals(key) &&
                     !"Request-URI".equals(key)   && !JSONObject.NULL.equals(value)) {
                 sb.append(key);
                 sb.append(": ");
-                sb.append(jo.optString(key));
+                sb.append(value);
                 sb.append(CRLF);
             }
         }

@@ -133,7 +133,8 @@ public class Cookie {
             sb.append(";path=");
             sb.append(escape(jo.getString("path")));
         }
-        if (jo.optBoolean("secure")) {
+        Boolean r = jo.getBoolean("secure");
+        if (r != null  &&  r) {
             sb.append(";secure");
         }
         return sb.toString();

@@ -482,7 +482,7 @@ public class JSONML {
 
 //Emit <tagName
 
-        tagName = jo.optString("tagName");
+        tagName = jo.getString("tagName");
         if (tagName == null) {
             return XML.escape(jo.toString());
         }
@@ -511,7 +511,7 @@ public class JSONML {
 
 //Emit content in body
 
-        ja = jo.optJSONArray("childNodes");
+        ja = jo.getJSONArray("childNodes");
         if (ja == null) {
             sb.append('/');
             sb.append('>');
