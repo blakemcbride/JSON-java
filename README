@@ -48,3 +48,9 @@ Changed all of the get methods to return null when not found rather than throwin
 Add get methods with default return values
 
 Remove opt methods
+
+10.  Added:
+
+JSONObject.getCharacter
+JSONArray.getCharacter
+

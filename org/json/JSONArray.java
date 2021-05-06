@@ -465,6 +465,26 @@ public class JSONArray implements Iterable<Object> {
     }
 
     /**
+     * Get the character associated with an index.
+     *
+     * @param index
+     *            The index must be between 0 and length() - 1.
+     * @return A Character value.
+     * @throws JSONException
+     *             If there is no string value for the index.
+     */
+    public Character getCharacter(int index) throws JSONException {
+        Object object = this.get(index);
+        if (object instanceof String) {
+            String s = (String) object;
+            if (s != null && !s.isEmpty())
+                return s.charAt(0);
+            return null;
+        }
+        throw new JSONException("JSONArray[" + index + "] not a string.");
+    }
+
+    /**
      * Determine if the value is null.
      *
      * @param index

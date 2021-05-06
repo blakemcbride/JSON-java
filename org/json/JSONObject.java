@@ -912,13 +912,50 @@ public class JSONObject {
         return getString(key, null);
     }
 
-        /**
-         * Determine if the JSONObject contains a specific key.
-         *
-         * @param key
-         *            A key string.
-         * @return true if the key exists in the JSONObject.
-         */
+    /**
+     * Get the character associated with a key.
+     * If the item is a string, the first character is returned.
+     * If key not present, return null.
+     *
+     * @param key
+     *            A key string.
+     * @return A Character which is the value or null if not found
+     * @throws JSONException
+     *             if there is no character value for the key.
+     */
+    public Character getCharacter(String key) throws JSONException {
+        String s = getString(key);
+        if (s != null && s.length() > 0)
+            return s.charAt(0);
+        return null;
+    }
+
+    /**
+     * Get the character associated with a key.
+     * If the item is a string, the first character is returned.
+     * If key not present, return dflt.
+     *
+     * @param key
+     *            A key string.
+     * @param dflt default value
+     * @return A Character which is the value or null if not found
+     * @throws JSONException
+     *             if there is no character value for the key.
+     */
+    public Character getCharacter(String key, char dflt) throws JSONException {
+        String s = getString(key);
+        if (s != null && s.length() > 0)
+            return s.charAt(0);
+        return dflt;
+    }
+
+    /**
+     * Determine if the JSONObject contains a specific key.
+     *
+     * @param key
+     *            A key string.
+     * @return true if the key exists in the JSONObject.
+     */
     public boolean has(String key) {
         return this.map.containsKey(key);
     }
