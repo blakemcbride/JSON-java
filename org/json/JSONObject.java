@@ -842,11 +842,27 @@ public class JSONObject {
         return getLong(key, null);
     }
 
-        /**
-         * Get an array of field names from a JSONObject.
-         *
-         * @return An array of field names, or null if there are no names.
-         */
+    /**
+     * Get the Date value associated with a key.
+     * If key not present, return null.
+     *
+     * @param key
+     *            A key string.
+     * @return The Date value or null if not found
+     * @throws JSONException
+     *             if the value cannot be converted
+     *             to a long.
+     */
+    public java.util.Date getDate(String key) throws JSONException {
+        Long r = getLong(key, null);
+        return r == null ? null : new java.util.Date(r);
+    }
+
+    /**
+     * Get an array of field names from a JSONObject.
+     *
+     * @return An array of field names, or null if there are no names.
+     */
     public static String[] getNames(JSONObject jo) {
         int length = jo.length();
         if (length == 0) {
@@ -1353,6 +1369,22 @@ public class JSONObject {
     }
 
     /**
+     * Put a key/Date in the JSONObject.
+     *
+     * @param key
+     *            A key string.
+     * @param value
+     *            A Date object which is the value or null.
+     * @return this.
+     * @throws JSONException
+     *             If the key is null.
+     */
+    public JSONObject put(String key, java.util.Date value) throws JSONException {
+        this.put(key, Long.valueOf(value == null ? 0 : value.getTime()));
+        return this;
+    }
+
+    /**
      * Put a key/value pair in the JSONObject.
      *
      * @param key
@@ -1360,7 +1392,7 @@ public class JSONObject {
      * @param value
      *            An object which is the value. It should be of one of these
      *            types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
-     *            String, null, or the JSONObject.NULL object.
+     *            String, null, or the JSONObject.
      * @return this.
      * @throws JSONException
      *             If the value is non-finite number or if the key is null.
