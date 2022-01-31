@@ -895,6 +895,7 @@ public class JSONObject {
 
     /**
      * Get the string associated with a key.
+     * If value is an integer, convert to string.
      * If key not present, return dflt.
      *
      * @param key
@@ -908,9 +909,10 @@ public class JSONObject {
         Object object = this.get(key);
         if (object == null  ||  NULL.equals(object))
             return dflt;
-        if (object instanceof String) {
+        if (object instanceof String)
             return (String) object;
-        }
+        else if (object instanceof Number)
+            return ((Number) object).intValue() + "";  // for backward compatability with old code
         throw new JSONException("JSONObject[" + quote(key) + "] not a string.");
     }
 
