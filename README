@@ -54,3 +54,5 @@ Remove opt methods
 JSONObject.getCharacter
 JSONArray.getCharacter
 
+11.  Improve handling of NULL on numeric fields and correct JSONArray numeric return types
+     Improve Java 17 support

@@ -545,7 +545,7 @@ public class JSONObject {
      */
     public Boolean getBoolean(String key, Boolean dflt) throws JSONException {
         Object object = this.get(key);
-        if (object == null)
+        if (object == null || object == NULL)
             return dflt;
         if (object.equals(Boolean.FALSE)
                 || (object instanceof String && ((String) object)
@@ -555,9 +555,16 @@ public class JSONObject {
                 || (object instanceof String && ((String) object)
                         .equalsIgnoreCase("true"))) {
             return true;
+        } else if (object instanceof String) {
+            String so = (String) object;
+            if (so.equalsIgnoreCase("null") || so.isEmpty())
+                return null;
+            if (so.equalsIgnoreCase("true"))
+                return true;
+            if (so.equalsIgnoreCase("false"))
+                return false;
         }
-        throw new JSONException("JSONObject[" + quote(key)
-                + "] is not a Boolean.");
+        throw new JSONException("JSONObject[" + quote(key) + "] is not a Boolean.");
     }
 
     /**
@@ -589,8 +596,7 @@ public class JSONObject {
         try {
             return new BigInteger(object.toString());
         } catch (Exception e) {
-            throw new JSONException("JSONObject[" + quote(key)
-                    + "] could not be converted to BigInteger.", e);
+            throw new JSONException("JSONObject[" + quote(key) + "] could not be converted to BigInteger.", e);
         }
     }
 
@@ -631,14 +637,20 @@ public class JSONObject {
      */
     public Double getDouble(String key, Double dflt) throws JSONException {
         Object object = this.get(key);
-        if (object == null)
+        if (object == null || object == NULL)
             return dflt;
         try {
-            return object instanceof Number ? ((Number) object).doubleValue()
-                    : Double.parseDouble(object.toString());
+            if (object instanceof Number)
+                return ((Number) object).doubleValue();
+            if (object instanceof String) {
+                String so = (String) object;
+                if ("null".equals(so)  ||  so.isEmpty())
+                    return null;
+                return Double.parseDouble(so);
+            }
+            throw new Exception();
         } catch (Exception e) {
-            throw new JSONException("JSONObject[" + quote(key)
-                    + "] is not a number.", e);
+            throw new JSONException("JSONObject[" + quote(key) + "] is not a number.", e);
         }
     }
 
@@ -659,14 +671,20 @@ public class JSONObject {
      */
     public Float getFloat(String key, Float dflt) throws JSONException {
         Object object = this.get(key);
-        if (object == null)
+        if (object == null || object == NULL)
             return dflt;
         try {
-            return object instanceof Number ? ((Number) object).floatValue()
-                    : Float.parseFloat(object.toString());
+            if (object instanceof Number)
+                return ((Number) object).floatValue();
+            if (object instanceof String) {
+                String so = (String) object;
+                if ("null".equals(so)  ||  so.isEmpty())
+                    return null;
+                return Float.parseFloat(so);
+            }
+            throw new Exception();
         } catch (Exception e) {
-            throw new JSONException("JSONObject[" + quote(key)
-                    + "] is not a number.", e);
+            throw new JSONException("JSONObject[" + quote(key) + "] is not a number.", e);
         }
     }
 
@@ -719,14 +737,20 @@ public class JSONObject {
      */
     public Integer getInt(String key, Integer dflt) throws JSONException {
         Object object = this.get(key);
-        if (object == null)
+        if (object == null || object == NULL)
             return dflt;
         try {
-            return object instanceof Number ? ((Number) object).intValue()
-                    : Integer.parseInt((String) object);
+            if (object instanceof Number)
+                return ((Number) object).intValue();
+            if (object instanceof String) {
+                String so = (String) object;
+                if ("null".equals(so)  ||  so.isEmpty())
+                    return null;
+                return Integer.parseInt(so);
+            }
+            throw new Exception();
         } catch (Exception e) {
-            throw new JSONException("JSONObject[" + quote(key)
-                    + "] is not an int.", e);
+            throw new JSONException("JSONObject[" + quote(key) + "] is not an int.", e);
         }
     }
 
@@ -816,14 +840,20 @@ public class JSONObject {
          */
     public Long getLong(String key, Long dflt) throws JSONException {
         Object object = this.get(key);
-        if (object == null)
+        if (object == null || object == NULL)
             return dflt;
         try {
-            return object instanceof Number ? ((Number) object).longValue()
-                    : Long.parseLong((String) object);
+            if (object instanceof Number)
+                return ((Number) object).longValue();
+            if (object instanceof String) {
+                String so = (String) object;
+                if ("null".equals(so)  ||  so.isEmpty())
+                    return null;
+                return Long.parseLong(so);
+            }
+            throw new Exception();
         } catch (Exception e) {
-            throw new JSONException("JSONObject[" + quote(key)
-                    + "] is not a long.", e);
+            throw new JSONException("JSONObject[" + quote(key) + "] is not a long.", e);
         }
     }
 

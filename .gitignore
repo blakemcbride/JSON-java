@@ -8,3 +8,4 @@ json.jar
 .idea/
 *.iml
 
+/nbproject/private/
