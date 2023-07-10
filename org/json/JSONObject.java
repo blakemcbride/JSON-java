@@ -784,6 +784,11 @@ public class JSONObject {
             return rtnArray ? new JSONArray() : null;
         if (object instanceof JSONArray) {
             return (JSONArray) object;
+        } else if (object instanceof String) {
+            String s = (String) object;
+            s = s.trim();
+            if (s.length() > 1  &&  s.charAt(0) == '[')
+                return new JSONArray((String) object);
         }
         throw new JSONException("JSONObject[" + quote(key)
                 + "] is not a JSONArray.");
@@ -817,6 +822,11 @@ public class JSONObject {
             return rtnObj ? new JSONObject() : null;
         if (object instanceof JSONObject) {
             return (JSONObject) object;
+        } else if (object instanceof String) {
+            String s = (String) object;
+            s = s.trim();
+            if (s.length() > 1 && s.charAt(0) == '{')
+                return new JSONObject((String) object);
         }
         throw new JSONException("JSONObject[" + quote(key)
                 + "] is not a JSONObject.");
