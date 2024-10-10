@@ -59,3 +59,7 @@ JSONArray.getCharacter
 
 12.  Enhanced getJSONObject and getJASONArray to handle cases where those elements are 
      being represented as Strings
+
+13.  Library was too agressive at trying to find object values.  Was causing stack overflows.
+     Corrected.
+
