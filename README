@@ -63,3 +63,5 @@ JSONArray.getCharacter
 13.  Library was too agressive at trying to find object values.  Was causing stack overflows.
      Corrected.
 
+14.  Removed the difference between JSON null and Java null
+
