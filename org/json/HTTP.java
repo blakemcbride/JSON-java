@@ -149,7 +149,7 @@ public class HTTP {
             String value = jo.getString(key);
             if (!"HTTP-Version".equals(key)      && !"Status-Code".equals(key) &&
                     !"Reason-Phrase".equals(key) && !"Method".equals(key) &&
-                    !"Request-URI".equals(key)   && !JSONObject.NULL.equals(value)) {
+                    !"Request-URI".equals(key)   && value != null) {
                 sb.append(key);
                 sb.append(": ");
                 sb.append(value);

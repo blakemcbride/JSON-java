@@ -275,7 +275,7 @@ public class XML {
                 if ("CDATA".equals(token)) {
                     if (x.next() == '[') {
                         string = x.nextCDATA();
-                        if (string.length() > 0) {
+                        if (!string.isEmpty()) {
                             context.accumulate("content", string);
                         }
                         return false;
@@ -369,7 +369,7 @@ public class XML {
                             return false;
                         } else if (token instanceof String) {
                             string = (String) token;
-                            if (string.length() > 0) {
+                            if (!string.isEmpty()) {
                                 jsonobject.accumulate("content",
                                         keepStrings ? string : stringToValue(string));
                             }
@@ -406,7 +406,7 @@ public class XML {
     // To maintain compatibility with the Android API, this method is a direct copy of
     // the one in JSONObject. Changes made here should be reflected there.
     public static Object stringToValue(String string) {
-        if (string.equals("")) {
+        if (string.isEmpty()) {
             return string;
         }
         if (string.equalsIgnoreCase("true")) {
@@ -416,7 +416,7 @@ public class XML {
             return Boolean.FALSE;
         }
         if (string.equalsIgnoreCase("null")) {
-            return JSONObject.NULL;
+            return null;
         }
 
         /*
@@ -436,10 +436,10 @@ public class XML {
                         return d;
                     }
                 } else {
-                    Long myLong = Long.valueOf(string);
-                    if (string.equals(myLong.toString())) {
-                        if (myLong.longValue() == myLong.intValue()) {
-                            return Integer.valueOf(myLong.intValue());
+                    long myLong = Long.parseLong(string);
+                    if (string.equals(Long.toString(myLong))) {
+                        if (myLong == (int) myLong) {
+                            return (int) myLong;
                         }
                         return myLong;
                     }
@@ -631,7 +631,7 @@ public class XML {
 
         string = (object == null) ? "null" : escape(object.toString());
         return (tagName == null) ? "\"" + string + "\""
-                : (string.length() == 0) ? "<" + tagName + "/>" : "<" + tagName
+                : (string.isEmpty()) ? "<" + tagName + "/>" : "<" + tagName
                         + ">" + string + "</" + tagName + ">";
 
     }

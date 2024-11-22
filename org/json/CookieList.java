@@ -71,7 +71,7 @@ public class CookieList {
         // Don't use the new entrySet API to maintain Android support
         for (final String key : jo.keySet()) {
             final Object value = jo.opt(key);
-            if (!JSONObject.NULL.equals(value)) {
+            if (value != null) {
                 if (b) {
                     sb.append(';');
                 }
