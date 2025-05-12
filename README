@@ -65,3 +65,5 @@ JSONArray.getCharacter
 
 14.  Removed the difference between JSON null and Java null
 
+15.  Handle Unicode Strings with BOM codes
+

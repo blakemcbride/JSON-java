@@ -50,7 +50,7 @@ public class JSONTokener {
     /** previous character read from the input. */
     private char previous;
     /** Reader for the input. */
-    private final Reader reader;
+    private Reader reader;
     /** flag to indicate that a previous character was requested. */
     private boolean usePrevious;
     /** the number of characters read in the previous line. */
@@ -86,14 +86,23 @@ public class JSONTokener {
 
 
     /**
-     * Construct a JSONTokener from a string.
-     *
-     * @param s     A source string.
+     * Construct a JSONTokener from a String.
+     * Removes a leading U+FEFF BOM if present so the parser
+     * starts with the real first character ('{' or '[').
      */
     public JSONTokener(String s) {
-        this(new StringReader(s));
+        s = JSONObject.fixString(s);
+        this.reader = new StringReader(s);
+        if (!this.reader.markSupported())
+            this.reader = new BufferedReader(this.reader);
+        this.eof = false;
+        this.usePrevious = false;
+        this.previous = 0;
+        this.index = 0;
+        this.character = 1;
+        this.characterPreviousLine = 0;
+        this.line = 1;
     }
-
 
     /**
      * Back up one character. This provides a sort of lookahead capability,

@@ -1099,6 +1099,13 @@ public class JSONArray implements Iterable<Object> {
         return this;
     }
 
+    public JSONArray put(String value) {
+        value = JSONObject.fixString(value);
+        this.myArrayList.add(value);
+        return this;
+    }
+
+
     /**
      * Put or replace a boolean value in the JSONArray. If the index is greater
      * than the length of the JSONArray, then null elements will be added as
@@ -1223,6 +1230,8 @@ public class JSONArray implements Iterable<Object> {
      *             number.
      */
     public JSONArray put(int index, Object value) throws JSONException {
+        if (value instanceof String)
+            value = JSONObject.fixString((String)value);
         JSONObject.testValidity(value);
         if (index < 0) {
             throw new JSONException("JSONArray[" + index + "] not found.");

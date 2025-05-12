@@ -1386,6 +1386,42 @@ public class JSONObject {
     }
 
     /**
+     * Put a key/value pair in the JSONObject.
+     *
+     * @param key A key string.
+     * @param value
+     * @return this.
+     * @throws JSONException
+     *             If the value is non-finite number or if the key is null.
+     */
+    public JSONObject put(String key, String value) throws JSONException {
+        if (key == null) {
+            throw new NullPointerException("Null key.");
+        }
+        if (value != null) {
+            value = fixString(value);
+            testValidity(value);
+        }
+        this.map.put(key, value);
+        return this;
+    }
+
+    /**
+     * Remove Unicode BOM from string.
+     *
+     * @param s
+     * @return
+     */
+    static String fixString(String s) {
+        if (s == null || s.isEmpty())
+            return s;
+        char c = s.charAt(0);
+        if (c == '\uFEFF' || c == '\uFFFD' || c == '\uFFFE')
+            return fixString(s.substring(1));
+        return s;
+    }
+
+    /**
      * Put a key/value pair in the JSONObject, but only if the key and the value
      * are both non-null, and only if there is not already a member with that
      * name.
