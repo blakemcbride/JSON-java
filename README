@@ -1,4 +1,6 @@
 
+# This repo is being archived because it was integrated into the Kiss Web Development Framework located at https://github.com/blakemcbride/Kiss It will be maintained from there moving forward.
+
 This is a Java library for dealing with JSON objects.
 
 This is a fork of https://github.com/stleary/JSON-java
